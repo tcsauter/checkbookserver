@@ -1,6 +1,6 @@
 package com.noartist.checkbookserver.entity;
 
-public class Account {
+public class Account implements Comparable<Account>{
     private int id;
     private String name;
     private String type;
@@ -69,6 +69,11 @@ public class Account {
             return ((Account) obj).getId() == this.id;
         }
         return false;
+    }
+
+    @Override
+    public int compareTo(Account o) {
+        return this.getName().compareTo(o.getName());
     }
 
     class InvalidTypeException extends Exception {
