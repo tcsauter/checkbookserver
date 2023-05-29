@@ -1,26 +1,17 @@
 package com.noartist.checkbookserver.entity;
 
 public class Account implements Comparable<Account>{
-    private int id;
+    private String _id;
     private String name;
     private String type;
     private int lastFour;
 
-    public Account(int id, String name, String type, int lastFour) throws InvalidTypeException {
-        setId(id);
-        setName(name);
-        setType(type);
-        setLastFour(lastFour);
+    public String get_Id() {
+        return _id;
     }
 
-    public Account(){}
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+    public void set_Id(String _id) {
+        this._id = _id;
     }
 
     public String getName() {
@@ -56,7 +47,7 @@ public class Account implements Comparable<Account>{
     @Override
     public String toString() {
         return "Account{" +
-                "id=" + id +
+                "_id=" + _id +
                 ", name='" + name + '\'' +
                 ", type='" + type + '\'' +
                 ", lastFour=" + lastFour +
@@ -66,7 +57,7 @@ public class Account implements Comparable<Account>{
     @Override
     public boolean equals(Object obj) {
         if(obj instanceof Account){
-            return ((Account) obj).getId() == this.id;
+            return ((Account) obj).get_Id().equals(this.get_Id());
         }
         return false;
     }
