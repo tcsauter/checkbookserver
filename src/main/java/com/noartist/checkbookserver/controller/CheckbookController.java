@@ -13,8 +13,6 @@ import java.util.List;
 @RestController
 public class CheckbookController {
 
-    //todo: Figure out an id strategy; the one provided by mongoDb is not going to work
-
     String connectUri = "mongodb+srv://traviscsauter:yxQzYrphFAPDxbLT@cluster0.fe4mczu.mongodb.net/?retryWrites=true&w=majority";
 
     @GetMapping("/expenses")
