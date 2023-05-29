@@ -1,29 +1,17 @@
 package com.noartist.checkbookserver.entity;
 
-import java.time.LocalDate;
-
 public class Expense implements Comparable<Expense> {
-    private int id;
+    private String _id;
     private double amount;
-    private int acctId;
-    private LocalDate date;
+    private String accountId;
+    private String date;
 
-    public Expense() {
+    public String get_id(){
+        return _id;
     }
 
-    public Expense(int id, double amount, int acctId, LocalDate date) {
-        this.id = id;
-        this.amount = amount;
-        this.acctId = acctId;
-        this.date = date;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+    public void set_id(String _id){
+        this._id = _id;
     }
 
     public double getAmount() {
@@ -34,36 +22,35 @@ public class Expense implements Comparable<Expense> {
         this.amount = amount;
     }
 
-    public int getAcctId() {
-        return acctId;
+    public String getAccountId() {
+        return accountId;
     }
 
-    public void setAcctId(int acctId) {
-        this.acctId = acctId;
+    public void setAccountId(String accountId) {
+        this.accountId = accountId;
     }
 
-    public LocalDate getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(LocalDate date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
     @Override
     public String toString() {
         return "Expense{" +
-                "id=" + id +
-                ", amount=" + amount +
-                ", acctId=" + acctId +
-                ", date=" + date +
+                "amount=" + amount +
+                ", accountId=" + accountId +
+                ", date='" + date + '\'' +
                 '}';
     }
 
     @Override
     public boolean equals(Object obj) {
         if(obj instanceof Expense){
-            return ((Expense) obj).getId() == this.id;
+            return ((Expense) obj).get_id().equals(this._id);
         }
         return false;
     }
