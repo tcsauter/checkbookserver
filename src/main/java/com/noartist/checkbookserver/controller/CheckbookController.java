@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@CrossOrigin()
 @RestController
 public class CheckbookController {
 
@@ -202,5 +203,34 @@ public class CheckbookController {
             }
         }
         return getAccounts();
+    }
+
+    @PostMapping("/bulkadd/expenses")
+    public List<Expense> bulkAddExpenses(@RequestBody Expense[] expenses) {
+        try(MongoClient client = MongoClients.create(connectUri)){
+            MongoDatabase db = client.getDatabase("checkbook");
+
+            MongoCollection<Document> expensesTable = db.getCollection("expenses");
+
+            List<Document> newExpenseDocs = new ArrayList<>(expenses.length);
+
+            for (Expense expense : expenses) {
+                Document newExpenseDoc = new Document("_id", expense.get_id())
+                        .append("accountId", expense.getAccountId())
+                        .append("amount", expense.getAmount())
+                        .append("date", expense.getDate());
+
+                newExpenseDocs.add(newExpenseDoc);
+            }
+
+            try {
+                expensesTable.insertMany(newExpenseDocs);
+            } catch (Exception e) {
+                //todo: institute error handling
+                e.printStackTrace();
+            }
+        }
+
+        return getExpenses();
     }
 }
