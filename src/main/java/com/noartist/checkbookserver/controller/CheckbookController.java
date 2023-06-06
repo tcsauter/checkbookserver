@@ -233,4 +233,36 @@ public class CheckbookController {
 
         return getExpenses();
     }
+
+    @PostMapping("/bulkadd/accounts")
+    public List<Account> bulkAddAccounts(@RequestBody Account[] accounts) {
+        try(MongoClient client = MongoClients.create(connectUri)){
+            MongoDatabase db = client.getDatabase("checkbook");
+
+            MongoCollection<Document> accountTable = db.getCollection("accounts");
+
+            List<Document> newAccountsDoc = new ArrayList<>(accounts.length);
+
+            for (Account account : accounts) {
+                Document newAccountDoc = new Document("_id", account.get_id())
+                        .append("name", account.getName())
+                        .append("type", account.getType());
+
+                if(account.getLastFour() != null){
+                    newAccountDoc.append("lastFour", account.getLastFour());
+                }
+
+                newAccountsDoc.add(newAccountDoc);
+            }
+
+            try {
+                accountTable.insertMany(newAccountsDoc);
+            } catch (Exception e) {
+                //todo: institute error handling
+                e.printStackTrace();
+            }
+        }
+
+        return getAccounts();
+    }
 }
