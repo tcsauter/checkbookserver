@@ -265,4 +265,24 @@ public class CheckbookController {
 
         return getAccounts();
     }
+
+    @DeleteMapping("/clear/expenses")
+    public boolean clearExpenses(){
+        boolean expensesCleared = false;
+
+        try(MongoClient client = MongoClients.create(connectUri)) {
+            MongoDatabase db = client.getDatabase("checkbook");
+
+            MongoCollection<Document> expensesTable = db.getCollection("expenses");
+
+            try {
+                expensesCleared = expensesTable.deleteMany(Filters.empty()).wasAcknowledged();
+            } catch (Exception e) {
+                //todo: institute error handling
+                e.printStackTrace();
+            }
+        }
+
+        return expensesCleared;
+    }
 }
