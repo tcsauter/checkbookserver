@@ -19,13 +19,20 @@ public class CheckbookController {
     String connectUri = "mongodb+srv://traviscsauter:yxQzYrphFAPDxbLT@cluster0.fe4mczu.mongodb.net/?retryWrites=true&w=majority";
 
     @GetMapping("/get/expenses")
-    public List<Expense> getExpenses(){
+    public List<Expense> getExpenses(@RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate){
         try(MongoClient client = MongoClients.create(connectUri)){
             MongoDatabase db = client.getDatabase("checkbook");
 
             MongoCollection<Document> expensesTable = db.getCollection("expenses");
 
-            FindIterable<Document> cursor = expensesTable.find();
+            FindIterable<Document> cursor;
+
+            if(startDate != null && endDate != null){
+                Bson filter = Filters.and(Filters.gte("date", startDate), Filters.lte("date", endDate));
+                cursor = expensesTable.find(filter);
+            }else{
+                cursor = expensesTable.find();
+            }
 
             List<Expense> results = new ArrayList<>();
 
@@ -79,7 +86,7 @@ public class CheckbookController {
     }
 
     @PostMapping("/add/expense")
-    public List<Expense> addExpense(@RequestBody Expense expense){
+    public List<Expense> addExpense(@RequestBody Expense expense, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate){
         try(MongoClient client = MongoClients.create(connectUri)){
             MongoDatabase db = client.getDatabase("checkbook");
 
@@ -98,7 +105,7 @@ public class CheckbookController {
             }
         }
 
-        return getExpenses();
+        return getExpenses(startDate, endDate);
     }
 
     @PostMapping("/add/account")
@@ -128,7 +135,11 @@ public class CheckbookController {
     }
 
     @PutMapping("/update/expense/{expenseId}")
-    public List<Expense> updateExpense(@RequestBody Expense update, @PathVariable("expenseId") String expenseId) {
+    public List<Expense> updateExpense(@RequestBody Expense update,
+                                       @PathVariable("expenseId") String expenseId,
+                                       @RequestParam(required = false) String startDate,
+                                       @RequestParam(required = false) String endDate
+    ) {
         try(MongoClient client = MongoClients.create(connectUri)){
             MongoDatabase db = client.getDatabase("checkbook");
 
@@ -145,7 +156,7 @@ public class CheckbookController {
                 e.printStackTrace();
             }
         }
-        return getExpenses();
+        return getExpenses(startDate, endDate);
     }
 
     @PutMapping("/update/account/{accountId}")
@@ -170,7 +181,10 @@ public class CheckbookController {
     }
 
     @DeleteMapping("/delete/expense/{expenseId}")
-    public List<Expense> deleteExpense(@PathVariable String expenseId) {
+    public List<Expense> deleteExpense(@PathVariable String expenseId,
+                                       @RequestParam(required = false) String startDate,
+                                       @RequestParam(required = false) String endDate
+    ) {
         try(MongoClient client = MongoClients.create(connectUri)){
             MongoDatabase db = client.getDatabase("checkbook");
 
@@ -184,7 +198,7 @@ public class CheckbookController {
                 e.printStackTrace();
             }
         }
-        return getExpenses();
+        return getExpenses(startDate, endDate);
     }
 
     @DeleteMapping("/delete/account/{accountId}")
@@ -231,7 +245,7 @@ public class CheckbookController {
             }
         }
 
-        return getExpenses();
+        return getExpenses(null, null);
     }
 
     @PostMapping("/bulkadd/accounts")
