@@ -3,6 +3,7 @@ package com.noartist.checkbookserver.controller;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Filters;
 import com.noartist.checkbookserver.entity.Account;
+import com.noartist.checkbookserver.entity.BudgetPeriod;
 import com.noartist.checkbookserver.entity.Expense;
 import com.noartist.checkbookserver.exception.InvalidTypeException;
 import org.bson.Document;
@@ -83,6 +84,34 @@ public class CheckbookController {
             }
         }
         return null;
+    }
+
+    @GetMapping("/get/budgetperiods")
+    public List<BudgetPeriod> getBudgetPeriods(){
+        try(MongoClient client = MongoClients.create(connectUri)){
+            MongoDatabase db = client.getDatabase("checkbook");
+
+            MongoCollection<Document> accountsTable = db.getCollection("budgetPeriods");
+
+            FindIterable<Document> cursor = accountsTable.find();
+
+            List<BudgetPeriod> results = new ArrayList<>();
+
+            try(final MongoCursor<Document> cursorIterator = cursor.cursor()){
+                while(cursorIterator.hasNext()){
+                    Document doc = cursorIterator.next();
+                    BudgetPeriod bp = new BudgetPeriod();
+                    bp.set_id(doc.get("_id").toString());
+                    bp.setPayDate(doc.get("payDate").toString());
+                    bp.setBudgetStart(doc.get("budgetStart").toString());
+                    bp.setBudgetEnd(doc.get("budgetEnd").toString());
+                    bp.setStartingAmt(Double.parseDouble(doc.get("startingAmt").toString()));
+
+                    results.add(bp);
+                }
+                return results;
+            }
+        }
     }
 
     @PostMapping("/add/expense")
