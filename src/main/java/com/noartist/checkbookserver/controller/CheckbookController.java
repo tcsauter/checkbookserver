@@ -78,6 +78,7 @@ public class CheckbookController {
 
                     results.add(account);
                 }
+                results.sort(null);
                 return results;
             }catch(InvalidTypeException e) {
                 e.printStackTrace();
@@ -109,6 +110,7 @@ public class CheckbookController {
 
                     results.add(bp);
                 }
+                results.sort(null);
                 return results;
             }
         }
