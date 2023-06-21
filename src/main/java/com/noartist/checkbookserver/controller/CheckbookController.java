@@ -309,6 +309,36 @@ public class CheckbookController {
         return getAccounts();
     }
 
+    @PostMapping("/bulkadd/budgetperiods")
+    public List<BudgetPeriod> bulkAddBudgetPeriods(@RequestBody BudgetPeriod[] bps){
+        try(MongoClient client = MongoClients.create(connectUri)){
+            MongoDatabase db = client.getDatabase("checkbook");
+
+            MongoCollection<Document> budgetPeriodsTable = db.getCollection("budgetPeriods");
+
+            List<Document> newBpsDoc = new ArrayList<>(bps.length);
+
+            for (BudgetPeriod bp : bps) {
+                Document newBpDoc = new Document("_id", bp.get_id())
+                        .append("budgetStart", bp.getBudgetStart())
+                        .append("budgetEnd", bp.getBudgetEnd())
+                        .append("payDate", bp.getPayDate())
+                        .append("startingAmt", bp.getStartingAmt());
+
+                newBpsDoc.add(newBpDoc);
+            }
+
+            try {
+                budgetPeriodsTable.insertMany(newBpsDoc);
+            } catch (Exception e) {
+                //todo: institute error handling
+                e.printStackTrace();
+            }
+        }
+
+        return getBudgetPeriods();
+    }
+
     @DeleteMapping("/clear/expenses")
     public boolean clearExpenses(){
         boolean expensesCleared = false;
