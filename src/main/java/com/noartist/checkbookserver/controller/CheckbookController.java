@@ -212,6 +212,28 @@ public class CheckbookController {
         return getAccounts();
     }
 
+    @PutMapping("/update/budgetperiod/{budgetPeriodId}")
+    public List<BudgetPeriod> updateBudgetPeriod(@RequestBody BudgetPeriod update, @PathVariable("budgetPeriodId") String budgetPeriodId){
+        try(MongoClient client = MongoClients.create(connectUri)){
+            MongoDatabase db = client.getDatabase("checkbook");
+
+            MongoCollection<Document> bpTable = db.getCollection("budgetPeriods");
+
+            Bson query = Filters.eq("_id", budgetPeriodId);
+            Document bpDoc = new Document("payDate", update.getPayDate())
+                    .append("budgetStart", update.getBudgetStart())
+                    .append("budgetEnd", update.getBudgetEnd())
+                    .append("startingAmt", update.getStartingAmt());
+
+            try {
+                bpTable.replaceOne(query, bpDoc);
+            }catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return getBudgetPeriods();
+    }
+
     @DeleteMapping("/delete/expense/{expenseId}")
     public List<Expense> deleteExpense(@PathVariable String expenseId,
                                        @RequestParam(required = false) String startDate,
