@@ -49,6 +49,7 @@ public class CheckbookController {
 
                     results.add(expense);
                 }
+                results.sort(null);
                 return results;
             }
         }
