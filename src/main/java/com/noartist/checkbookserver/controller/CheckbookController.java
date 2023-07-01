@@ -166,6 +166,30 @@ public class CheckbookController {
         return getAccounts();
     }
 
+    @PostMapping("/add/budgetperiod")
+    public List<BudgetPeriod> addBudgetPeriod(@RequestBody BudgetPeriod budgetPeriod) {
+        try(MongoClient client = MongoClients.create(connectUri)){
+            MongoDatabase db = client.getDatabase("checkbook");
+
+            MongoCollection<Document> budgetPeriodsTable = db.getCollection("budgetPeriods");
+
+            Document newBpDoc = new Document("_id", budgetPeriod.get_id())
+                    .append("payDate", budgetPeriod.getPayDate())
+                    .append("budgetStart", budgetPeriod.getBudgetStart())
+                    .append("budgetEnd", budgetPeriod.getBudgetEnd())
+                    .append("startingAmt", budgetPeriod.getStartingAmt());
+
+            try {
+                budgetPeriodsTable.insertOne(newBpDoc);
+            } catch (Exception e) {
+                //todo: institute error handling
+                e.printStackTrace();
+            }
+        }
+
+        return getBudgetPeriods();
+    }
+
     @PutMapping("/update/expense/{expenseId}")
     public List<Expense> updateExpense(@RequestBody Expense update,
                                        @PathVariable("expenseId") String expenseId,
