@@ -407,4 +407,24 @@ public class CheckbookController {
 
         return expensesCleared;
     }
+
+    @DeleteMapping("/clear/budgetperiods")
+    public boolean clearBudgetPeriods(){
+        boolean bpsCleared = false;
+
+        try(MongoClient client = MongoClients.create(connectUri)) {
+            MongoDatabase db = client.getDatabase("checkbook");
+
+            MongoCollection<Document> bpTable = db.getCollection("budgetPeriods");
+
+            try {
+                bpsCleared = bpTable.deleteMany(Filters.empty()).wasAcknowledged();
+            } catch (Exception e) {
+                //todo: institute error handling
+                e.printStackTrace();
+            }
+        }
+
+        return bpsCleared;
+    }
 }
