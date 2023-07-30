@@ -224,8 +224,11 @@ public class CheckbookController {
 
             Bson query = Filters.eq("_id", accountId);
             Document accountDoc = new Document("name", update.getName())
-                    .append("type", update.getType())
-                    .append("lastFour", update.getLastFour());
+                    .append("type", update.getType());
+
+            if(update.getLastFour() != null){
+                accountDoc.append("lastFour", update.getLastFour());
+            }
 
             try {
                 accountsTable.replaceOne(query, accountDoc);
