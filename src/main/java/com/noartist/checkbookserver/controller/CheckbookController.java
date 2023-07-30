@@ -391,6 +391,27 @@ public class CheckbookController {
         return getBudgetPeriods();
     }
 
+    @DeleteMapping("/delete/expenses/{accountId}")
+    public List<Expense> deleteExpensesByAccount(@PathVariable("accountId") String accountId,
+                                            @RequestParam(required = false) String startDate,
+                                            @RequestParam(required = false) String endDate
+    ) {
+        try(MongoClient client = MongoClients.create(connectUri)){
+            MongoDatabase db = client.getDatabase("checkbook");
+
+            MongoCollection<Document> expensesTable = db.getCollection("expenses");
+
+            Bson query = Filters.eq("accountId", accountId);
+
+            try {
+                expensesTable.deleteMany(query);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return getExpenses(startDate, endDate);
+    }
+
     @DeleteMapping("/clear/expenses")
     public boolean clearExpenses(){
         boolean expensesCleared = false;
