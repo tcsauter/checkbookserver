@@ -300,6 +300,24 @@ public class CheckbookController {
         return getAccounts();
     }
 
+    @DeleteMapping("/delete/budgetperiod/{budgetPeriodId}")
+    public List<BudgetPeriod> deleteBudgetPeriod(@PathVariable("budgetPeriodId") String budgetPeriodId) {
+        try(MongoClient client = MongoClients.create(connectUri)){
+            MongoDatabase db = client.getDatabase("checkbook");
+
+            MongoCollection<Document> bpsTable = db.getCollection("budgetPeriods");
+
+            Bson query = Filters.eq("_id", budgetPeriodId);
+
+            try {
+                bpsTable.deleteOne(query);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return getBudgetPeriods();
+    }
+
     @PostMapping("/bulkadd/expenses")
     public List<Expense> bulkAddExpenses(@RequestBody Expense[] expenses) {
         try(MongoClient client = MongoClients.create(connectUri)){
