@@ -1,6 +1,7 @@
 package com.noartist.checkbookserver.entity;
 
 import com.noartist.checkbookserver.exception.InvalidDueDateException;
+import com.noartist.checkbookserver.exception.InvalidFrequencyException;
 
 public class Bill implements Comparable<Bill> {
     private String _id;
@@ -53,12 +54,13 @@ public class Bill implements Comparable<Bill> {
         }
     }
 
-    public void setFrequency(String frequency) {
+    public void setFrequency(String frequency) throws InvalidFrequencyException {
         switch(frequency.toLowerCase()) {
             case "yearly" -> this.frequency = Frequency.Y;
             case "quarterly" -> this.frequency = Frequency.Q;
             case "monthly" -> this.frequency = Frequency.M;
             case "bi-weekly" -> this.frequency = Frequency.B;
+            default -> throw new InvalidFrequencyException("Bill frequency must be Yearly, Quarterly, Monthly, or Bi-Weekly.");
         }
     }
 
