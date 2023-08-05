@@ -38,7 +38,7 @@ public class Bill implements Comparable<Bill> {
     }
 
     public String getFrequency() {
-        switch(this.frequency) {
+        switch (this.frequency) {
             case Y -> {
                 return "Yearly";
             }
@@ -55,12 +55,13 @@ public class Bill implements Comparable<Bill> {
     }
 
     public void setFrequency(String frequency) throws InvalidFrequencyException {
-        switch(frequency.toLowerCase()) {
+        switch (frequency.toLowerCase()) {
             case "yearly" -> this.frequency = Frequency.Y;
             case "quarterly" -> this.frequency = Frequency.Q;
             case "monthly" -> this.frequency = Frequency.M;
             case "bi-weekly" -> this.frequency = Frequency.B;
-            default -> throw new InvalidFrequencyException("Bill frequency must be Yearly, Quarterly, Monthly, or Bi-Weekly.");
+            default ->
+                    throw new InvalidFrequencyException("Bill frequency must be Yearly, Quarterly, Monthly, or Bi-Weekly.");
         }
     }
 
@@ -115,7 +116,7 @@ public class Bill implements Comparable<Bill> {
                     isValidated = false;
                 }
 
-                if(!isValidated) {
+                if (!isValidated) {
                     throw new InvalidDueDateException("Due Date must be in mm-dd format for Yearly bills.");
                 }
             }
@@ -123,16 +124,16 @@ public class Bill implements Comparable<Bill> {
                 boolean isValidated = true;
                 try {
                     int day = Integer.parseInt(due);
-                    if(day > 0 && day < 32) {
+                    if (day > 0 && day < 32) {
                         this.due = due;
                     } else {
                         isValidated = false;
                     }
-                } catch(NumberFormatException e) {
+                } catch (NumberFormatException e) {
                     isValidated = false;
                 }
 
-                if(!isValidated) {
+                if (!isValidated) {
                     throw new InvalidDueDateException("Due Date must be a valid day of the month for Monthly bills.");
                 }
             }
@@ -167,40 +168,45 @@ public class Bill implements Comparable<Bill> {
 
     @Override
     public int compareTo(Bill o) {
-        //Ordering of bills is: By Frequency
+        //Ordering of bills is: Bills paid in installments at the top, then
+        //                      By Frequency
         //                      By Due Date
         //                      By Description
-        if(this.frequency.equals(o.frequency)) {
-            if(this.due.equals(o.due)) {
-                if(this.description.equals(o.description)) {
-                    return 0;
-                } else {
-                    return this.description.compareTo(o.description);
-                }
+        if (this.isPaidInInstallments) {
+            if (o.isPaidInInstallments) {
+                return this.description.compareTo(o.description);
             } else {
-                return this.due.compareTo(o.due);
+                return 1;
             }
         } else {
-            switch(this.frequency) {
-                case Y -> {
-                    return 1;
+            if (this.frequency.equals(o.frequency)) {
+                if (this.due.equals(o.due)) {
+                    return this.description.compareTo(o.description);
+                } else {
+                    return this.due.compareTo(o.due);
                 }
-                case Q -> {
-                    if(o.frequency.equals(Frequency.Y)) {
-                        return -1;
-                    } else {
+            } else {
+                switch (this.frequency) {
+                    case Y -> {
                         return 1;
                     }
-                }
-                case M -> {
-                    if(o.frequency.equals(Frequency.Y) || o.frequency.equals(Frequency.Q)) {
-                        return -1;
-                    } else {
-                        return 1;
+                    case Q -> {
+                        if (o.frequency.equals(Frequency.Y)) {
+                            return -1;
+                        } else {
+                            return 1;
+                        }
                     }
-                }
-                default -> {
-                    return -1;
+                    case M -> {
+                        if (o.frequency.equals(Frequency.Y) || o.frequency.equals(Frequency.Q)) {
+                            return -1;
+                        } else {
+                            return 1;
+                        }
+                    }
+                    default -> {
+                        return -1;
+                    }
                 }
             }
         }
@@ -222,7 +228,7 @@ public class Bill implements Comparable<Bill> {
 
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof Bill) {
+        if (obj instanceof Bill) {
             return this.compareTo((Bill) obj) == 0;
         } else {
             return false;
@@ -240,6 +246,7 @@ public class Bill implements Comparable<Bill> {
         Frequency(String freqString) {
             this.frequencyString = freqString;
         }
+
         @Override
         public String toString() {
             return frequencyString;
