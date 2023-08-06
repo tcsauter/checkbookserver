@@ -38,20 +38,7 @@ public class Bill implements Comparable<Bill> {
     }
 
     public String getFrequency() {
-        switch (this.frequency) {
-            case Y -> {
-                return "Yearly";
-            }
-            case Q -> {
-                return "Quarterly";
-            }
-            case M -> {
-                return "Monthly";
-            }
-            default -> {
-                return "Bi-Weekly";
-            }
-        }
+        return this.frequency.toString();
     }
 
     public void setFrequency(String frequency) throws InvalidFrequencyException {
