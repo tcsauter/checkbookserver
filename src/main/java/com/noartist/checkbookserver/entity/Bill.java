@@ -159,44 +159,44 @@ public class Bill implements Comparable<Bill> {
         //                      By Frequency
         //                      By Due Date
         //                      By Description
-        if (this.isPaidInInstallments) {
-            if (o.isPaidInInstallments) {
-                return this.description.compareTo(o.description);
-            } else {
-                return 1;
-            }
-        } else {
-            if (this.frequency.equals(o.frequency)) {
-                if (this.due.equals(o.due)) {
-                    return this.description.compareTo(o.description);
-                } else {
-                    return this.due.compareTo(o.due);
+        if (this.isPaidInInstallments && o.isPaidInInstallments) {
+            return this.description.compareTo(o.description);
+        } else if (this.isPaidInInstallments) {
+            return -1;
+        } else if (o.isPaidInInstallments) {
+            return 1;
+        }
+
+        if (!(this.frequency.equals(o.frequency))) {
+            switch (this.frequency) {
+                case Y -> {
+                    return -1;
                 }
-            } else {
-                switch (this.frequency) {
-                    case Y -> {
+                case Q -> {
+                    if (o.frequency.equals(Frequency.Y)) {
                         return 1;
-                    }
-                    case Q -> {
-                        if (o.frequency.equals(Frequency.Y)) {
-                            return -1;
-                        } else {
-                            return 1;
-                        }
-                    }
-                    case M -> {
-                        if (o.frequency.equals(Frequency.Y) || o.frequency.equals(Frequency.Q)) {
-                            return -1;
-                        } else {
-                            return 1;
-                        }
-                    }
-                    default -> {
+                    } else {
                         return -1;
                     }
                 }
+                case M -> {
+                    if (o.frequency.equals(Frequency.Y) || o.frequency.equals(Frequency.Q)) {
+                        return 1;
+                    } else {
+                        return -1;
+                    }
+                }
+                default -> {
+                    return 1;
+                }
             }
         }
+
+        if (!(this.due.equals(o.due))) {
+            return this.due.compareTo(o.due);
+        }
+
+        return this.description.compareTo(o.description);
     }
 
     @Override
