@@ -124,8 +124,8 @@ public class Bill implements Comparable<Bill> {
                     throw new InvalidDueDateException("Due Date must be a valid day of the month for Monthly bills.");
                 }
             }
-            case B -> due = "Bi-Weekly";
-            case Q -> due = "Quarterly";
+            case B -> this.due = "Bi-Weekly";
+            case Q -> this.due = "Quarterly";
         }
     }
 
