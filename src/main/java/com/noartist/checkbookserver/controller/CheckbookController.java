@@ -117,6 +117,51 @@ public class CheckbookController {
         }
     }
 
+    @GetMapping("/get/bills")
+    public List<Bill> getBills() {
+        try (MongoClient client = MongoClients.create(connectUri)) {
+            MongoDatabase db = client.getDatabase("checkbook");
+
+            MongoCollection<Document> billsTable = db.getCollection("bills");
+
+            FindIterable<Document> cursor = billsTable.find();
+
+            List<Bill> results = new ArrayList<>();
+
+            try (final MongoCursor<Document> cursorIterator = cursor.cursor()) {
+                while(cursorIterator.hasNext()) {
+                    Document doc = cursorIterator.next();
+                    Bill bill = new Bill();
+                    bill.set_id(doc.get("_id").toString());
+                    bill.setDescription(doc.get("description").toString());
+                    bill.setAmount(Double.parseDouble(doc.get("amount").toString()));
+                    bill.setFrequency(doc.get("frequency").toString());
+                    bill.setDue(doc.get("due").toString());
+                    bill.setPaidInInstallments(Boolean.parseBoolean(doc.get("isPaidInInstallments").toString()));
+                    bill.setPaidSoFar(Double.parseDouble(doc.get("paidSoFar").toString()));
+                    bill.setPaidFromBudget(Boolean.parseBoolean(doc.get("isPaidFromBudget").toString()));
+
+                    results.add(bill);
+                }
+
+                System.out.println("Before Sort:");
+                for(Bill bill : results) {
+                    System.out.println(bill.toString());
+                }
+                results.sort(null);
+                System.out.println("After Sort:");
+                for(Bill bill: results) {
+                    System.out.println(bill.toString());
+                }
+                return results;
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return null;
+    }
+
     @PostMapping("/add/expense")
     public List<Expense> addExpense(@RequestBody Expense expense, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate){
         try(MongoClient client = MongoClients.create(connectUri)){
