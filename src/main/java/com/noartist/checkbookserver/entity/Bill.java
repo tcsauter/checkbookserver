@@ -2,6 +2,7 @@ package com.noartist.checkbookserver.entity;
 
 import com.noartist.checkbookserver.exception.InvalidDueDateException;
 import com.noartist.checkbookserver.exception.InvalidFrequencyException;
+import org.bson.Document;
 
 public class Bill implements Comparable<Bill> {
     private String _id;
@@ -12,6 +13,30 @@ public class Bill implements Comparable<Bill> {
     private boolean isPaidInInstallments;
     private double paidSoFar;
     private boolean isPaidFromBudget;
+
+    public Document createdDocumentFromBill() {
+        return new Document("_id", this.get_id())
+                .append("description", this.getDescription())
+                .append("amount", this.getAmount())
+                .append("frequency", this.getFrequency())
+                .append("due", this.getDue())
+                .append("isPaidInInstallments", this.isPaidInInstallments())
+                .append("paidSoFar", this.getPaidSoFar())
+                .append("isPaidFromBudget", this.isPaidFromBudget());
+    }
+
+    public Bill() {}
+
+    public Bill(Document doc) throws NumberFormatException, InvalidFrequencyException, InvalidDueDateException {
+        this.set_id(doc.get("_id").toString());
+        this.setDescription(doc.get("description").toString());
+        this.setAmount(Double.parseDouble(doc.get("amount").toString()));
+        this.setFrequency(doc.get("frequency").toString());
+        this.setDue(doc.get("due").toString());
+        this.setPaidInInstallments(Boolean.parseBoolean(doc.get("isPaidInInstallments").toString()));
+        this.setPaidSoFar(Double.parseDouble(doc.get("paidSoFar").toString()));
+        this.setPaidFromBudget(Boolean.parseBoolean(doc.get("isPaidFromBudget").toString()));
+    }
 
     public String get_id() {
         return _id;
