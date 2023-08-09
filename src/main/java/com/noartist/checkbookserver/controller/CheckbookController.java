@@ -145,15 +145,7 @@ public class CheckbookController {
                     results.add(bill);
                 }
 
-                System.out.println("Before Sort:");
-                for(Bill bill : results) {
-                    System.out.println(bill.toString());
-                }
                 results.sort(null);
-                System.out.println("After Sort:");
-                for(Bill bill: results) {
-                    System.out.println(bill.toString());
-                }
                 return results;
             } catch(Exception e) {
                 e.printStackTrace();
