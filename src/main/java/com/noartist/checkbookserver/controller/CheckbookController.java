@@ -132,17 +132,8 @@ public class CheckbookController {
             try (final MongoCursor<Document> cursorIterator = cursor.cursor()) {
                 while(cursorIterator.hasNext()) {
                     Document doc = cursorIterator.next();
-                    Bill bill = new Bill();
-                    bill.set_id(doc.get("_id").toString());
-                    bill.setDescription(doc.get("description").toString());
-                    bill.setAmount(Double.parseDouble(doc.get("amount").toString()));
-                    bill.setFrequency(doc.get("frequency").toString());
-                    bill.setDue(doc.get("due").toString());
-                    bill.setPaidInInstallments(Boolean.parseBoolean(doc.get("isPaidInInstallments").toString()));
-                    bill.setPaidSoFar(Double.parseDouble(doc.get("paidSoFar").toString()));
-                    bill.setPaidFromBudget(Boolean.parseBoolean(doc.get("isPaidFromBudget").toString()));
 
-                    results.add(bill);
+                    results.add(new Bill(doc));
                 }
 
                 results.sort(null);
@@ -235,17 +226,8 @@ public class CheckbookController {
 
             MongoCollection<Document> billsTable = db.getCollection("bills");
 
-            Document newBillDoc = new Document("_id", bill.get_id())
-                    .append("description", bill.getDescription())
-                    .append("amount", bill.getAmount())
-                    .append("frequency", bill.getFrequency())
-                    .append("due", bill.getDue())
-                    .append("isPaidInInstallments", bill.isPaidInInstallments())
-                    .append("paidSoFar", bill.getPaidSoFar())
-                    .append("isPaidFromBudget", bill.isPaidFromBudget());
-
             try {
-                billsTable.insertOne(newBillDoc);
+                billsTable.insertOne(bill.createdDocumentFromBill());
             } catch(Exception e) {
                 e.printStackTrace();
             }
@@ -333,16 +315,9 @@ public class CheckbookController {
             MongoCollection<Document> billsTable = db.getCollection("bills");
 
             Bson query = Filters.eq("_id", billId);
-            Document billDoc = new Document("description", bill.getDescription())
-                    .append("amount", bill.getAmount())
-                    .append("frequency", bill.getFrequency())
-                    .append("due", bill.getDue())
-                    .append("isPaidInInstallments", bill.isPaidInInstallments())
-                    .append("paidSoFar", bill.getPaidSoFar())
-                    .append("isPaidFromBudget", bill.isPaidFromBudget());
 
             try {
-                billsTable.replaceOne(query, billDoc);
+                billsTable.replaceOne(query, bill.createdDocumentFromBill());
             }catch (Exception e) {
                 e.printStackTrace();
             }
