@@ -228,6 +228,32 @@ public class CheckbookController {
         return getBudgetPeriods();
     }
 
+    @PostMapping("/add/bill")
+    public List<Bill> addBill(@RequestBody Bill bill) {
+        try(MongoClient client = MongoClients.create(connectUri)) {
+            MongoDatabase db = client.getDatabase("checkbook");
+
+            MongoCollection<Document> billsTable = db.getCollection("bills");
+
+            Document newBillDoc = new Document("_id", bill.get_id())
+                    .append("description", bill.getDescription())
+                    .append("amount", bill.getAmount())
+                    .append("frequency", bill.getFrequency())
+                    .append("due", bill.getDue())
+                    .append("isPaidInInstallments", bill.isPaidInInstallments())
+                    .append("paidSoFar", bill.getPaidSoFar())
+                    .append("isPaidFromBudget", bill.isPaidFromBudget());
+
+            try {
+                billsTable.insertOne(newBillDoc);
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return getBills();
+    }
+
     @PutMapping("/update/expense/{expenseId}")
     public List<Expense> updateExpense(@RequestBody Expense update,
                                        @PathVariable("expenseId") String expenseId,
