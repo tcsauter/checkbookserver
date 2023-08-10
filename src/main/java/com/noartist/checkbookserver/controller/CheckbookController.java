@@ -492,6 +492,29 @@ public class CheckbookController {
         return getBudgetPeriods();
     }
 
+    @PostMapping("/bulkadd/bills")
+    public List<Bill> bulkAddBills(@RequestBody Bill[] bills) {
+        try(MongoClient client = MongoClients.create(connectUri)) {
+            MongoDatabase db = client.getDatabase("checkbook");
+
+            MongoCollection<Document> billsTable = db.getCollection("bills");
+
+            List<Document> newBillsDoc = new ArrayList<>(bills.length);
+
+            for(Bill bill : bills) {
+                newBillsDoc.add(bill.createdDocumentFromBill());
+            }
+
+            try {
+                billsTable.insertMany(newBillsDoc);
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return getBills();
+    }
+
     @DeleteMapping("/delete/expenses/{accountId}")
     public List<Expense> deleteExpensesByAccount(@PathVariable("accountId") String accountId,
                                             @RequestParam(required = false) String startDate,
