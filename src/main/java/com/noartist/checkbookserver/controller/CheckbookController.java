@@ -41,14 +41,8 @@ public class CheckbookController {
             try(final MongoCursor<Document> cursorIterator = cursor.cursor()){
                 while(cursorIterator.hasNext()){
                     Document doc = cursorIterator.next();
-                    Expense expense = new Expense();
-                    expense.set_id(doc.get("_id").toString());
-                    expense.setAccountId(doc.get("accountId").toString());
-                    expense.setAmount(Double.parseDouble(doc.get("amount").toString()));
-                    expense.setDate(doc.get("date").toString());
 
-
-                    results.add(expense);
+                    results.add(new Expense(doc));
                 }
                 results.sort(null);
                 return results;
@@ -153,13 +147,8 @@ public class CheckbookController {
 
             MongoCollection<Document> expensesTable = db.getCollection("expenses");
 
-            Document newExpenseDoc = new Document("_id", expense.get_id())
-                    .append("accountId", expense.getAccountId())
-                    .append("amount", expense.getAmount())
-                    .append("date", expense.getDate());
-
             try {
-                expensesTable.insertOne(newExpenseDoc);
+                expensesTable.insertOne(expense.createDocumentFromExpense());
             } catch (Exception e) {
                 //todo: institute error handling
                 e.printStackTrace();
@@ -248,12 +237,9 @@ public class CheckbookController {
             MongoCollection<Document> expensesTable = db.getCollection("expenses");
 
             Bson query = Filters.eq("_id", expenseId);
-            Document expenseDoc = new Document("accountId", update.getAccountId())
-                    .append("amount", update.getAmount())
-                    .append("date", update.getDate());
 
             try {
-                expensesTable.replaceOne(query, expenseDoc);
+                expensesTable.replaceOne(query, update.createDocumentFromExpense());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -411,12 +397,7 @@ public class CheckbookController {
             List<Document> newExpenseDocs = new ArrayList<>(expenses.length);
 
             for (Expense expense : expenses) {
-                Document newExpenseDoc = new Document("_id", expense.get_id())
-                        .append("accountId", expense.getAccountId())
-                        .append("amount", expense.getAmount())
-                        .append("date", expense.getDate());
-
-                newExpenseDocs.add(newExpenseDoc);
+                newExpenseDocs.add(expense.createDocumentFromExpense());
             }
 
             try {

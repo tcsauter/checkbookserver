@@ -1,16 +1,35 @@
 package com.noartist.checkbookserver.entity;
 
+import org.bson.Document;
+
 public class Expense implements Comparable<Expense> {
     private String _id;
     private double amount;
     private String accountId;
     private String date;
 
-    public String get_id(){
+    public Expense() {
+    }
+
+    public Expense(Document doc) {
+        set_id(doc.get("_id").toString());
+        setAccountId(doc.get("accountId").toString());
+        setAmount(Double.parseDouble(doc.get("amount").toString()));
+        setDate(doc.get("date").toString());
+    }
+
+    public Document createDocumentFromExpense() {
+        return new Document("_id", get_id())
+                .append("accountId", getAccountId())
+                .append("amount", getAmount())
+                .append("date", getDate());
+    }
+
+    public String get_id() {
         return _id;
     }
 
-    public void set_id(String _id){
+    public void set_id(String _id) {
         this._id = _id;
     }
 
@@ -49,7 +68,7 @@ public class Expense implements Comparable<Expense> {
 
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof Expense){
+        if (obj instanceof Expense) {
             return ((Expense) obj).get_id().equals(this._id);
         }
         return false;
