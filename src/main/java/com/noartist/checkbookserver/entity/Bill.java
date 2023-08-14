@@ -13,9 +13,10 @@ public class Bill implements Comparable<Bill> {
     private boolean isPaidInInstallments;
     private double paidSoFar;
     private boolean isPaidFromBudget;
+    private String comment;
 
     public Document createdDocumentFromBill() {
-        return new Document("_id", this.get_id())
+        Document doc = new Document("_id", this.get_id())
                 .append("description", this.getDescription())
                 .append("amount", this.getAmount())
                 .append("frequency", this.getFrequency())
@@ -23,6 +24,12 @@ public class Bill implements Comparable<Bill> {
                 .append("isPaidInInstallments", this.isPaidInInstallments())
                 .append("paidSoFar", this.getPaidSoFar())
                 .append("isPaidFromBudget", this.isPaidFromBudget());
+
+        if (getComment() != null) {
+            doc.append("comment", this.getComment());
+        }
+
+        return doc;
     }
 
     public Bill() {}
@@ -36,6 +43,10 @@ public class Bill implements Comparable<Bill> {
         this.setPaidInInstallments(Boolean.parseBoolean(doc.get("isPaidInInstallments").toString()));
         this.setPaidSoFar(Double.parseDouble(doc.get("paidSoFar").toString()));
         this.setPaidFromBudget(Boolean.parseBoolean(doc.get("isPaidFromBudget").toString()));
+
+        if (doc.containsKey("comment")) {
+            this.setComment(doc.get("comment").toString());
+        }
     }
 
     public String get_id() {
@@ -178,6 +189,14 @@ public class Bill implements Comparable<Bill> {
         isPaidFromBudget = paidFromBudget;
     }
 
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
     @Override
     public int compareTo(Bill o) {
         //Ordering of bills is: Bills paid in installments at the top, then
@@ -235,6 +254,7 @@ public class Bill implements Comparable<Bill> {
                 ", isPaidInInstallments=" + isPaidInInstallments +
                 ", paidSoFar=" + paidSoFar +
                 ", isPaidFromBudget=" + isPaidFromBudget +
+                ", comment=" + comment +
                 '}';
     }
 
