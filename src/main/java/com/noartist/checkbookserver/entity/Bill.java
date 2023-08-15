@@ -15,7 +15,7 @@ public class Bill implements Comparable<Bill> {
     private boolean isPaidFromBudget;
     private String comment;
 
-    public Document createdDocumentFromBill() {
+    public Document toDocument() {
         Document doc = new Document("_id", this.get_id())
                 .append("description", this.getDescription())
                 .append("amount", this.getAmount())

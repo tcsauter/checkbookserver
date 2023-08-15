@@ -135,7 +135,7 @@ public class CheckbookController {
             MongoCollection<Document> expensesTable = db.getCollection("expenses");
 
             try {
-                expensesTable.insertOne(expense.createDocumentFromExpense());
+                expensesTable.insertOne(expense.toDocument());
             } catch (Exception e) {
                 //todo: institute error handling
                 e.printStackTrace();
@@ -189,7 +189,7 @@ public class CheckbookController {
             MongoCollection<Document> billsTable = db.getCollection("bills");
 
             try {
-                billsTable.insertOne(bill.createdDocumentFromBill());
+                billsTable.insertOne(bill.toDocument());
             } catch(Exception e) {
                 e.printStackTrace();
             }
@@ -212,7 +212,7 @@ public class CheckbookController {
             Bson query = Filters.eq("_id", expenseId);
 
             try {
-                expensesTable.replaceOne(query, update.createDocumentFromExpense());
+                expensesTable.replaceOne(query, update.toDocument());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -266,7 +266,7 @@ public class CheckbookController {
             Bson query = Filters.eq("_id", billId);
 
             try {
-                billsTable.replaceOne(query, bill.createdDocumentFromBill());
+                billsTable.replaceOne(query, bill.toDocument());
             }catch (Exception e) {
                 e.printStackTrace();
             }
@@ -360,7 +360,7 @@ public class CheckbookController {
             List<Document> newExpenseDocs = new ArrayList<>(expenses.length);
 
             for (Expense expense : expenses) {
-                newExpenseDocs.add(expense.createDocumentFromExpense());
+                newExpenseDocs.add(expense.toDocument());
             }
 
             try {
@@ -438,7 +438,7 @@ public class CheckbookController {
             List<Document> newBillsDoc = new ArrayList<>(bills.length);
 
             for(Bill bill : bills) {
-                newBillsDoc.add(bill.createdDocumentFromBill());
+                newBillsDoc.add(bill.toDocument());
             }
 
             try {

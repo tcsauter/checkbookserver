@@ -18,7 +18,7 @@ public class Expense implements Comparable<Expense> {
         setDate(doc.get("date").toString());
     }
 
-    public Document createDocumentFromExpense() {
+    public Document toDocument() {
         return new Document("_id", get_id())
                 .append("accountId", getAccountId())
                 .append("amount", getAmount())
