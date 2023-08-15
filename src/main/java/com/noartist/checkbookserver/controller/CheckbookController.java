@@ -64,15 +64,8 @@ public class CheckbookController {
             try(final MongoCursor<Document> cursorIterator = cursor.cursor()){
                 while(cursorIterator.hasNext()){
                     Document doc = cursorIterator.next();
-                    Account account = new Account();
-                    account.set_id(doc.get("_id").toString());
-                    account.setName(doc.get("name").toString());
-                    account.setType(doc.get("type").toString());
-                    if(doc.containsKey("lastFour")){
-                        account.setLastFour(doc.get("lastFour").toString());
-                    }
 
-                    results.add(account);
+                    results.add(new Account(doc));
                 }
                 results.sort(null);
                 return results;
@@ -165,16 +158,8 @@ public class CheckbookController {
 
             MongoCollection<Document> accountsTable = db.getCollection("accounts");
 
-            Document newAccountDoc = new Document("_id", account.get_id())
-                    .append("name", account.getName())
-                    .append("type", account.getType());
-
-            if(account.getLastFour() != null){
-                newAccountDoc.append("lastFour", account.getLastFour());
-            }
-
             try {
-                accountsTable.insertOne(newAccountDoc);
+                accountsTable.insertOne(account.toDocument());
             } catch (Exception e) {
                 //todo: institute error handling
                 e.printStackTrace();
@@ -255,15 +240,9 @@ public class CheckbookController {
             MongoCollection<Document> accountsTable = db.getCollection("accounts");
 
             Bson query = Filters.eq("_id", accountId);
-            Document accountDoc = new Document("name", update.getName())
-                    .append("type", update.getType());
-
-            if(update.getLastFour() != null){
-                accountDoc.append("lastFour", update.getLastFour());
-            }
 
             try {
-                accountsTable.replaceOne(query, accountDoc);
+                accountsTable.replaceOne(query, update.toDocument());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -421,15 +400,7 @@ public class CheckbookController {
             List<Document> newAccountsDoc = new ArrayList<>(accounts.length);
 
             for (Account account : accounts) {
-                Document newAccountDoc = new Document("_id", account.get_id())
-                        .append("name", account.getName())
-                        .append("type", account.getType());
-
-                if(account.getLastFour() != null){
-                    newAccountDoc.append("lastFour", account.getLastFour());
-                }
-
-                newAccountsDoc.add(newAccountDoc);
+                newAccountsDoc.add(account.toDocument());
             }
 
             try {

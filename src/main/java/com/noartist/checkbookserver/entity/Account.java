@@ -1,12 +1,37 @@
 package com.noartist.checkbookserver.entity;
 
 import com.noartist.checkbookserver.exception.InvalidTypeException;
+import org.bson.Document;
 
-public class Account implements Comparable<Account>{
+public class Account implements Comparable<Account> {
     private String _id;
     private String name;
     private String type;
     private String lastFour;
+
+    public Account() {
+    }
+
+    public Account(Document doc) throws InvalidTypeException {
+        set_id(doc.get("_id").toString());
+        setName(doc.get("name").toString());
+        setType(doc.get("type").toString());
+        if (doc.containsKey("lastFour")) {
+            setLastFour(doc.get("lastFour").toString());
+        }
+    }
+
+    public Document toDocument() {
+        Document newAccountDoc = new Document("_id", get_id())
+                .append("name", getName())
+                .append("type", getType());
+
+        if (getLastFour() != null) {
+            newAccountDoc.append("lastFour", getLastFour());
+        }
+
+        return newAccountDoc;
+    }
 
     public String get_id() {
         return _id;
@@ -58,7 +83,7 @@ public class Account implements Comparable<Account>{
 
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof Account){
+        if (obj instanceof Account) {
             return ((Account) obj).get_id().equals(this.get_id());
         }
         return false;
