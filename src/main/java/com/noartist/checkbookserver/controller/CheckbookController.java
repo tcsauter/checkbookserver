@@ -90,14 +90,8 @@ public class CheckbookController {
             try(final MongoCursor<Document> cursorIterator = cursor.cursor()){
                 while(cursorIterator.hasNext()){
                     Document doc = cursorIterator.next();
-                    BudgetPeriod bp = new BudgetPeriod();
-                    bp.set_id(doc.get("_id").toString());
-                    bp.setPayDate(doc.get("payDate").toString());
-                    bp.setBudgetStart(doc.get("budgetStart").toString());
-                    bp.setBudgetEnd(doc.get("budgetEnd").toString());
-                    bp.setStartingAmt(Double.parseDouble(doc.get("startingAmt").toString()));
 
-                    results.add(bp);
+                    results.add(new BudgetPeriod(doc));
                 }
                 results.sort(null);
                 return results;
@@ -176,14 +170,8 @@ public class CheckbookController {
 
             MongoCollection<Document> budgetPeriodsTable = db.getCollection("budgetPeriods");
 
-            Document newBpDoc = new Document("_id", budgetPeriod.get_id())
-                    .append("payDate", budgetPeriod.getPayDate())
-                    .append("budgetStart", budgetPeriod.getBudgetStart())
-                    .append("budgetEnd", budgetPeriod.getBudgetEnd())
-                    .append("startingAmt", budgetPeriod.getStartingAmt());
-
             try {
-                budgetPeriodsTable.insertOne(newBpDoc);
+                budgetPeriodsTable.insertOne(budgetPeriod.toDocument());
             } catch (Exception e) {
                 //todo: institute error handling
                 e.printStackTrace();
@@ -258,13 +246,9 @@ public class CheckbookController {
             MongoCollection<Document> bpTable = db.getCollection("budgetPeriods");
 
             Bson query = Filters.eq("_id", budgetPeriodId);
-            Document bpDoc = new Document("payDate", update.getPayDate())
-                    .append("budgetStart", update.getBudgetStart())
-                    .append("budgetEnd", update.getBudgetEnd())
-                    .append("startingAmt", update.getStartingAmt());
 
             try {
-                bpTable.replaceOne(query, bpDoc);
+                bpTable.replaceOne(query, update.toDocument());
             }catch (Exception e) {
                 e.printStackTrace();
             }
